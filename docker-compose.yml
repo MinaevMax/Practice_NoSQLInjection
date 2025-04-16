@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  app:
+    depends_on:
+    - mongodb
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - MONGODB_URI=mongodb://admin:secret@mongodb:27017/fines_db?authSource=admin
+      - PORT=:8080
+      - FLAG=practice{y0U_FoUnd_th3_f1Ag}
+
+  mongodb:
+    image: mongo:6.0  # Используем официальный образ MongoDB
+    container_name: mongodb_container
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin  # Логин root-пользователя
+      MONGO_INITDB_ROOT_PASSWORD: secret  # Пароль root-пользователя
+    ports:
+      - "27017:27017"  # Пробрасываем порт MongoDB на хост
+    volumes:
+      - mongodb_data:/data/db  # Сохраняем данные БД
+      # Для инициализации БД (опционально):
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+
+volumes:
+  mongodb_data:
